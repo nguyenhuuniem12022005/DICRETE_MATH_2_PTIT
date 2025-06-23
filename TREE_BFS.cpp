@@ -1,52 +1,67 @@
 #include <bits/stdc++.h>
+
 using namespace std;
 
-void T_BFS(int a[][100], int n, int start) {
-    bool visited[100] = {false};
-    int T[100]; // T[v] = u => u là cha của v trong cây khung
-    queue<int> q;
+int n, a[101][101];
+vector<bool> visited(n + 1, false);
+vector<pair<int, int>> tree;
 
-    q.push(start);
-    visited[start] = true;
-    T[start] = -1; // Gốc cây không có cha
-
-    while (!q.empty()) {
-        int u = q.front(); q.pop();
-
-        for (int v = 1; v <= n; v++) {
-            if (a[u][v] == 1 && !visited[v]) {
-                q.push(v);
-                visited[v] = true;
-                T[v] = u;
-            }
+void T_DFS(int u) {
+    visited[u] = true;
+    if (tree.size() == (n - 1)) {
+        return;
+    }
+    for(int i = 1; i <= n; i++) {
+        if(a[u][i] == 1 && !visited[i]) {
+            pair<int, int> tmp(u, i);
+            tree.push_back(tmp);
+            T_DFS(i);
         }
     }
+}
 
-    // In cây khung BFS
-    cout << "Cay khung BFS (dinh - cha):\n";
-    for (int i = 1; i <= n; i++) {
-        if (T[i] != -1)
-            cout << i << " - " << T[i] << '\n';
+void T_BFS(int u) {
+    queue<int> q;
+    q.push(u);
+    visited[u] = true;
+    while(tree.size() != (n - 1)) {
+        int x = q.front(); q.pop();
+
+        for(int i = 1; i <= n; i++) {
+            if(a[x][i] == 1 && !visited[i]) {
+                q.push(i);
+                visited[i] = true;
+                tree.push_back(make_pair(x, i));
+            }
+        }
     }
 }
 
 int main() {
-    int a[100][100];
-    int n;
-
-    cout << "Enter number of vertices: ";
     cin >> n;
-
-    cout << "Enter adjacency matrix (0 or 1):\n";
-    for (int i = 1; i <= n; i++)
-        for (int j = 1; j <= n; j++)
+    for(int i = 1; i <= n; i++) {
+        for(int j = 1; j <= n; j++) {
             cin >> a[i][j];
+        }
+    }
+    int u; cin >> u;
+    T_DFS(u);
 
-    int startVertex;
-    cout << "Enter starting vertex for BFS Tree: ";
-    cin >> startVertex;
+    for(pair<int, int> x : tree) {
+        cout << '(' << x.first << ", " << x.second << ") ";
+    }
+    cout << endl;
+    
+    for(int i = 1; i <= n; i++) {
+        visited[i] = false;
+    }
+    tree.clear();
 
-    T_BFS(a, n, startVertex);
+    T_BFS(u);
 
+    for(pair<int, int> x : tree) {
+        cout << '(' << x.first << ", " << x.second << ") ";
+    }
+    cout << endl;
     return 0;
 }

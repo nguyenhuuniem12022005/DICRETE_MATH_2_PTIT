@@ -1,51 +1,49 @@
 #include <bits/stdc++.h>
+
 using namespace std;
 
-void T_DFS(int a[100][100], int n)
-{
-    bool visited[100] = {false};
-    int T[100]; // lưu cây khung DFS
-    stack<int> s;
+int n, a[101][101];
+vector<bool> visited(n + 1, false);
+vector<pair<int, int>> tree;
 
-    s.push(1); // bắt đầu từ đỉnh 1 (bạn có thể đổi nếu cần)
-    visited[1] = true;
-    T[1] = -1; // gốc cây
-
-    while (!s.empty())
-    {
-        int u = s.top();
-        s.pop();
-
-        for (int v = n; v >= 1; v--) // duyệt ngược để giống DFS
-        {
-            if (a[u][v] == 1 && !visited[v])
-            {
-                s.push(v);
-                visited[v] = true;
-                T[v] = u; // lưu cha
-            }
+void T_DFS(int u) {
+    visited[u] = true;
+    if (tree.size() == (n - 1)) {
+        return;
+    }
+    for(int i = 1; i <= n; i++) {
+        if(a[u][i] == 1 && !visited[i]) {
+            pair<int, int> tmp(u, i);
+            tree.push_back(tmp);
+            T_DFS(i);
         }
     }
-
-    // In cây khung DFS
-    cout << "Cay khung DFS (dinh - cha):\n";
-    for (int i = 1; i <= n; i++)
-    {
-        if (T[i] != -1)
-            cout << i << " - " << T[i] << '\n';
-    }
 }
-
-int main()
-{
-    int a[100][100];
-    int n;
+int main() {
     cin >> n;
-    for (int i = 1; i <= n; i++)
-        for (int j = 1; j <= n; j++)
+    for(int i = 1; i <= n; i++) {
+        for(int j = 1; j <= n; j++) {
             cin >> a[i][j];
+        }
+    }
+    int u; cin >> u;
+    T_DFS(u);
 
-    T_DFS(a, n);
+    for(pair<int, int> x : tree) {
+        cout << '(' << x.first << ", " << x.second << ") ";
+    }
+    cout << endl;
+    
+    for(int i = 1; i <= n; i++) {
+        visited[i] = false;
+    }
+    tree.clear();
 
+    T_BFS(u);
+
+    for(pair<int, int> x : tree) {
+        cout << '(' << x.first << ", " << x.second << ") ";
+    }
+    cout << endl;
     return 0;
 }
